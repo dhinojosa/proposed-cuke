@@ -41,6 +41,9 @@ object FeatureParser:
   private val scenarioHeader: P[String] =
     (P.string("Scenario:") *> spaces0 *> text <* newline.?).map(_.trim)
 
+  private val scenarioOutlineHeader:P[String] =
+     spaces0.with1 *> (P.string("Scenario Outline:") *> spaces0 *> text <* newline.?)
+
   private def stepLine(prefix: String, keyword: StepKeyword): P[Step] = {
     val stepPrefix = P.string(prefix) *> P.char(' ') *> text
 
@@ -110,7 +113,7 @@ object FeatureParser:
           name = name,
           background = None,
           description = Nil,
-          scenarios = scenarios.toList
+          children = scenarios.map(FeatureChild.ScenarioCase.apply).toList
         )
     }
 
@@ -122,7 +125,7 @@ object FeatureParser:
           name = name,
           background = None,
           description = Nil,
-          scenarios = scenarios.toList
+          children = scenarios.map(FeatureChild.ScenarioCase.apply).toList
         )
     }
 

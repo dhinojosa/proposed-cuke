@@ -10,7 +10,7 @@ final case class Feature(
     name: String,
     description: List[String],
     background: Option[Background],
-    scenarios: List[Scenario]
+    children: List[FeatureChild]
 )
 
 final case class Scenario(
@@ -19,6 +19,31 @@ final case class Scenario(
     steps: List[Step]
 )
 
+enum InterpolatedTextPart:
+  case Literal(value: String)
+  case Placeholder(name: String)
+
+final case class InterpolatedText(parts: List[InterpolatedTextPart])
+
+final case class InterpolatedStep(
+    keyword: StepKeyword,
+    text: InterpolatedText,
+    table: Option[Table] = None
+)
+
+final case class Example(table: Table)
+
+final case class ScenarioOutline(
+    tags: List[Tag],
+    name: String,
+    steps: List[InterpolatedStep],
+    examples: List[Example]
+)
+
+enum FeatureChild:
+    case ScenarioCase(value: Scenario)
+    case ScenarioOutlineCase(value: ScenarioOutline)
+
 final case class Tag(value: String)
 
 final case class Step(
@@ -26,6 +51,7 @@ final case class Step(
     text: String,
     table: Option[Table] = Option.empty[Table]
 )
+
 final case class Cell(
     string: String
 )
